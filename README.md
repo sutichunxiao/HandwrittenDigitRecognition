@@ -1,0 +1,2 @@
+# HandwrittenDigitRecognition
+一个简单的示例，手写识别用的官方示例程序。TensorFlow2.0和百度paddle的都放进去了，web服务器用的python的flask框架。运行py文件启动服务器，访问网页手写数字后识别
