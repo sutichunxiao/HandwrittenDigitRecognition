@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="UTF-8">
+    <!--<script src="https://code.jquery.com/jquery-3.1.1.min.js">-->
+    <!--</script>-->
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
+    <title>Document</title>
+    <style type="text/css">
+        canvas {
+            border: 1px solid green;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="drawing-board" width="400" height="300"></canvas>
+<script type="text/javascript">
+    //创建画布
+    var canvas = document.getElementById('drawing-board');
+    var ctx = canvas.getContext('2d');
+ 
+    //设置当前画布为画笔状态
+    var painting = false;
+    var lastPoint = {x: undefined, y: undefined};
+    var last = null;
+ 
+    // 鼠标按下
+    canvas.onmousedown = function () {
+        // 在鼠标按下后触发鼠标移动事件
+        canvas.onmousemove = move;
+    };
+    // 鼠标抬起取消鼠标移动的事件
+    canvas.onmouseup = function () {
+        canvas.onmousemove = null;
+        last = null;
+    };
+    // 鼠标移出画布时 移动事件也要取消。
+    canvas.onmouseout = function () {
+        canvas.onmousemove = null;
+        last = null;
+    };
+    // 鼠标移动函数
+    function move(e) {
+        // console.log(e.offsetX);
+        if (last != null) {
+            ctx.beginPath();
+            ctx.lineWidth = 10;
+            ctx.moveTo(last[0], last[1]);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        }
+        // 第一次触发这个函数，只做一件事，把当前 鼠标的 x , y 的位置记录下来
+        // 做下一次 线段的 起始点。
+        last = [e.offsetX, e.offsetY];
+    }
+</script>
+<button onclick="canvasSaveToServer()">保存画板</button>
+<script type="text/javascript">
+    //保存画板
+    function canvasSaveToServer() {
+        var imgUrl = canvas.toDataURL("image/png");
+        var imageDataB64 = imgUrl.substring(22);
+        alert("savePic" + imageDataB64);
+ 
+        imgData = {uploadImg:imageDataB64};
+        var senddata = JSON.stringify(imgData);
+ 
+        //通过XMLHttpRequest 传送到后台
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/uploadcanvas", true);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send(JSON.stringify(senddata));
+ 
+        //方法二：通过ajax 传送到后台
+ 
+        // $.ajax({
+        //     url: "/uploadcanvas",
+        //     type: "POST",
+        //     //data: { "uploadImg": imageDataB64},
+        //     data:senddata,
+        //     async: true,
+        //     cashe: false,
+        //     contentType: false,
+        //     processData: false,
+        //     success: function (returndata) {
+        //         alert("success!")
+        //     },
+        //     error: function (returndata) {
+        //         alert("上传失败！")
+        //     }
+        // })
+ 
+    }
+</script>
